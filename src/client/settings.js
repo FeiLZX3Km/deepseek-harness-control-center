@@ -1736,9 +1736,11 @@ function PeakRingFooter(props) {
       cardStyle.transformOrigin = 'top left'
     }
   } else {
-    if (!isVertical) {
+    // Rail mode keeps the CSS-class sizing (.dshw_footRingRail); an inline
+    // width here would override it and stretch the 42px circle across the row.
+    if (!isVertical && !isRail) {
       cardStyle.width = '100%'
-    } else {
+    } else if (isVertical) {
       cardStyle.width = 'fit-content'
       cardStyle.maxWidth = Math.round(148 * peakScale) + 'px'
       cardStyle.marginLeft = 'auto'
@@ -1795,7 +1797,7 @@ function PeakRingFooter(props) {
       onClick: handleResetDock
     }, '↩ 归位') : null,
     React.createElement('div', { style: { flex: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' } },
-      peakRingSVG(state.configured ? state.windows : null, wallHourIn(tzName, offsetMinutes, new Date(nowMs)), clockSize, state.ariaText, state.weekendOffPeak)
+      peakRingSVG(state.configured ? state.windows : null, wallHourIn(tzName, offsetMinutes, new Date(nowMs)), clockSize, state.ariaText, state.weekendOffPeak, isRail)
     ),
     !isRail ? React.createElement('div', { className: 'dshw_footRingLabel' },
       React.createElement('div', { className: 'dshw_footRingHeader' },

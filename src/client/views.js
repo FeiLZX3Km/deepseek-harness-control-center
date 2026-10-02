@@ -66,33 +66,43 @@ function sessionCostLabel(currency) {
 // Noon = 0h at 12 o'clock, clockwise. Optional size scales the 76-unit
 // viewBox down for tight hosts (sidebar foot row / rail circle); optional
 // ariaText overrides the fallback label with the full screen-reader state.
-function peakRingSVG(windows, nowHour, size, ariaText, allOffPeak) {
+// Optional hourDigit renders the current hour centered in the ring
+// (rail/minimized mode, where the label column is hidden).
+function peakRingSVG(windows, nowHour, size, ariaText, allOffPeak, hourDigit) {
   var sizePx = typeof size === 'number' && size > 0 ? size : 76
   var R = 28
   var CX = 38
   var CY = 38
   var CIRC = 2 * Math.PI * R
+  // Center hour digit for tight hosts; font-size lives in user units so it
+  // scales with the viewBox (24 units ≈ 11px at the 36px rail size).
+  function hourDigitEl(peakNow) {
+    return React.createElement('text', {
+      key: 'hourDigit', x: CX, y: CY, textAnchor: 'middle', dominantBaseline: 'central',
+      className: 'dshw_ringHour' + (peakNow ? ' dshw_ringHourPeak' : '')
+    }, ('0' + Math.floor(nowHour)).slice(-2))
+  }
   // No pricing policy resolved: one neutral full ring, no arcs, no pointer
   // — the clock shows an unconfigured state and claims no price.
   if (!Array.isArray(windows) || windows.length === 0) {
     if (allOffPeak === true) {
+      var weekendCircle = React.createElement('circle', {
+        key: 'weekend-off', cx: CX, cy: CY, r: R, fill: 'none',
+        className: 'dshw_ringOff dshw_ringNow', strokeWidth: 6.5,
+        strokeDasharray: CIRC.toFixed(2) + ' 0', strokeDashoffset: '0'
+      })
       return React.createElement('svg', {
         width: sizePx, height: sizePx, viewBox: '0 0 76 76',
         role: 'img', className: 'dshw_peakRing',
         'aria-label': ariaText || '当前为周末低谷时段，全天半价'
-      },
-        React.createElement('circle', {
-          key: 'weekend-off', cx: CX, cy: CY, r: R, fill: 'none',
-          className: 'dshw_ringOff dshw_ringNow', strokeWidth: 6.5,
-          strokeDasharray: CIRC.toFixed(2) + ' 0', strokeDashoffset: '0'
-        }))
+      }, hourDigit ? [weekendCircle, hourDigitEl(false)] : weekendCircle)
     }
+    var neutralCircle = React.createElement('circle', { key: 'neutral', cx: CX, cy: CY, r: R, fill: 'none', className: 'dshw_ringNeutral', strokeWidth: 4 })
     return React.createElement('svg', {
       width: sizePx, height: sizePx, viewBox: '0 0 76 76',
       role: 'img', className: 'dshw_peakRing',
       'aria-label': ariaText || '峰谷计费时段未配置'
-    },
-      React.createElement('circle', { key: 'neutral', cx: CX, cy: CY, r: R, fill: 'none', className: 'dshw_ringNeutral', strokeWidth: 4 }))
+    }, hourDigit ? [neutralCircle, hourDigitEl(false)] : neutralCircle)
   }
   var segs = []
   // Build segments: which arcs are peak vs off
@@ -151,6 +161,7 @@ function peakRingSVG(windows, nowHour, size, ariaText, allOffPeak) {
     + ' ' + apexX.toFixed(1) + ',' + apexY.toFixed(1)
     + ' ' + (baseCx - 3.5 * -sinR).toFixed(1) + ',' + (baseCy - 3.5 * cosR).toFixed(1)
   children.push(React.createElement('polygon', { key: 'ptr', points: tri, className: 'dshw_ringPointer' }))
+  if (hourDigit) children.push(hourDigitEl(inPeak))
   return React.createElement('svg', {
     width: sizePx, height: sizePx, viewBox: '0 0 76 76',
     role: 'img', className: 'dshw_peakRing',

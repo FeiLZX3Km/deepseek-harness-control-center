@@ -235,9 +235,16 @@ var css = [
   'body[data-dsh-maid-atelier][data-ds-dark-theme] .dshw_footRing{--dsw-alias-label-primary:#f8f3e8;--dsw-alias-label-secondary:#d7def0;--dsw-alias-label-tertiary:#b5c1dd;--dsw-alias-border-l1:rgba(211,180,119,.52);--dsw-alias-border-l3:rgba(181,196,229,.34);--dsw-alias-interactive-bg-hover:rgba(41,61,111,.96);color:#f8f3e8;background:rgba(18,32,70,.92);border-color:rgba(211,180,119,.52);box-shadow:inset 0 1px rgba(255,255,255,.07),0 4px 12px rgba(0,0,0,.24)}',
   '.dshw_footRing[data-dshw-peak-background="transparent"]:not(.dshw_footRingFloating){background:transparent;box-shadow:none}',
   '.dshw_footRing[data-dshw-peak-background="transparent"]:not(.dshw_footRingFloating):hover{background:var(--dsw-alias-bg-layer-1,var(--dsw-alias-bg-base,rgba(127,127,127,.04)));box-shadow:none}',
-  'body[data-dsh-maid-atelier] .dshw_footRing[data-dshw-peak-background="transparent"]:not(.dshw_footRingFloating){background:transparent;box-shadow:none}',
-  'body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) .dshw_footRing[data-dshw-peak-background="transparent"]:not(.dshw_footRingFloating):hover{background:linear-gradient(145deg,rgba(34,55,106,.95),rgba(10,25,62,.97));box-shadow:inset 0 0 0 2px rgba(5,15,45,.44),0 4px 11px rgba(1,7,24,.22)}',
-  'body[data-dsh-maid-atelier][data-ds-dark-theme] .dshw_footRing[data-dshw-peak-background="transparent"]:not(.dshw_footRingFloating):hover{background:rgba(18,32,70,.92);box-shadow:inset 0 1px rgba(255,255,255,.07),0 4px 12px rgba(0,0,0,.24)}',
+  // The maid-atelier skin hardcodes cream text and label aliases, which stay
+  // readable on its own navy card. When the peak background is switched to
+  // "transparent" the card loses that navy fill but keeps the cream text, so in
+  // the light theme the labels sit cream-on-light and become unreadable. Drop
+  // the skin overrides for the transparent variant and let the host theme
+  // tokens drive color again (the hover rules below still restore the navy
+  // fill, and the cream aliases come back with it).
+  'body[data-dsh-maid-atelier] .dshw_footRing[data-dshw-peak-background="transparent"]:not(.dshw_footRingFloating){background:transparent;box-shadow:none;--dsw-alias-label-primary:initial;--dsw-alias-label-secondary:initial;--dsw-alias-label-tertiary:initial;color:inherit}',
+  'body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) .dshw_footRing[data-dshw-peak-background="transparent"]:not(.dshw_footRingFloating):hover{background:linear-gradient(145deg,rgba(34,55,106,.95),rgba(10,25,62,.97));box-shadow:inset 0 0 0 2px rgba(5,15,45,.44),0 4px 11px rgba(1,7,24,.22);--dsw-alias-label-primary:#f8f3e8;--dsw-alias-label-secondary:#d7def0;--dsw-alias-label-tertiary:#b5c1dd;color:#f8f3e8}',
+  'body[data-dsh-maid-atelier][data-ds-dark-theme] .dshw_footRing[data-dshw-peak-background="transparent"]:not(.dshw_footRingFloating):hover{background:rgba(18,32,70,.92);box-shadow:inset 0 1px rgba(255,255,255,.07),0 4px 12px rgba(0,0,0,.24);--dsw-alias-label-primary:#f8f3e8;--dsw-alias-label-secondary:#d7def0;--dsw-alias-label-tertiary:#b5c1dd;color:#f8f3e8}',
   '.dshw_footRing:hover{background:var(--dsw-alias-interactive-bg-hover,rgba(127,127,127,.1));border-color:var(--dsw-alias-border-l2,rgba(127,127,127,.28))}',
   '.dshw_footRing.dshw_low{border-color:var(--dsw-alias-state-error-primary,#e5534b)}',
   '.dshw_footRingRail{width:42px;height:42px;min-height:42px;margin:3px 0 6px;padding:0;justify-content:center;border-radius:50%;background:transparent;border:none;cursor:pointer}',

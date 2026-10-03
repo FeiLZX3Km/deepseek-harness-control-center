@@ -3441,3 +3441,17 @@ test('maid-atelier compatibility prevents the skin from forcing the wallet butto
   assert.match(source, /\[data-ds-dark-theme\] \.dshw_footRing\{[^}]*--dsw-alias-label-primary:#f8f3e8;[^}]*background:rgba\(18,32,70,\.92\)/, 'maid dark peak cards keep their light-on-navy palette')
   assert.match(source, /data-dshw-chip-main/, 'themes get a stable selector instead of guessing aria roles')
 })
+
+test('transparent peak background drops the skin text overrides so light mode stays readable', () => {
+  const source = readProjectFile('lib/client.js')
+  // The skin pins cream text and label aliases on .dshw_footRing for its navy
+  // card. The transparent variant removes the navy fill, so it must also drop
+  // the cream color — otherwise the labels render cream-on-light in the light
+  // theme. Regression guard: switching the peak background to "transparent"
+  // used to make the whole sidebar card unreadable under maid-atelier.
+  assert.match(source, /body\[data-dsh-maid-atelier\] \.dshw_footRing\[data-dshw-peak-background="transparent"\]:not\(\.dshw_footRingFloating\)\{background:transparent;box-shadow:none;--dsw-alias-label-primary:initial;--dsw-alias-label-secondary:initial;--dsw-alias-label-tertiary:initial;color:inherit\}/, 'the transparent skin variant hands text color back to the host theme')
+  // Hover restores the navy fill, so the cream palette has to come back with it
+  // or hovering would flip to dark-on-navy.
+  assert.match(source, /\[data-dshw-peak-background="transparent"\]:not\(\.dshw_footRingFloating\):hover\{[^}]*background:linear-gradient\(145deg,rgba\(34,55,106,\.95\),rgba\(10,25,62,\.97\)\);[^}]*--dsw-alias-label-primary:#f8f3e8;[^}]*color:#f8f3e8\}/, 'maid light hover restores the cream palette alongside the navy fill')
+  assert.match(source, /\[data-ds-dark-theme\] \.dshw_footRing\[data-dshw-peak-background="transparent"\]:not\(\.dshw_footRingFloating\):hover\{[^}]*background:rgba\(18,32,70,\.92\);[^}]*--dsw-alias-label-primary:#f8f3e8;[^}]*color:#f8f3e8\}/, 'maid dark hover restores the cream palette alongside its navy fill')
+})
